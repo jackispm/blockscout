@@ -1,5 +1,6 @@
 defmodule BlockScoutWeb.API.RPC.ContractControllerTest do
   use BlockScoutWeb.ConnCase
+  alias Explorer.Factory
 
   describe "listcontracts" do
     setup do
@@ -410,6 +411,44 @@ defmodule BlockScoutWeb.API.RPC.ContractControllerTest do
 
       assert response["result"] == expected_result
       assert response["status"] == "1"
+      assert response["message"] == "OK"
+    end
+  end
+
+  describe "verify" do
+    test "with an address that doesn't exist", %{conn: conn} do
+      contract_code_info = Factory.contract_code_info()
+
+      contract_address = insert(:contract_address, contract_code: contract_code_info.bytecode)
+
+      params = %{
+        "module" => "contract",
+        "action" => "verify",
+        "addressHash" => to_string(contract_address.hash),
+        "name" => contract_code_info.name,
+        "compilerVersion" => contract_code_info.version,
+        "optimization" => contract_code_info.optimized,
+        "contractSourceCode" => contract_code_info.source_code
+      }
+
+      response =
+        conn
+        |> get("/api", params)
+        |> json_response(200)
+
+      expected_result = %{
+        "Address" => to_string(contract_address.hash),
+        "SourceCode" => contract_code_info.source_code,
+        "ABI" => Jason.encode!(contract_code_info.abi),
+        "ContractName" => contract_code_info.name,
+        "CompilerVersion" => contract_code_info.version,
+        "DecompiledSourceCode" => "Contract source code not decompiled.",
+        "DecompilerVersion" => "",
+        "OptimizationUsed" => "0"
+      }
+
+      assert response["status"] == "1"
+      assert response["result"] == expected_result
       assert response["message"] == "OK"
     end
   end
