@@ -93,6 +93,7 @@ defmodule Indexer.InternalTransaction.Fetcher do
 
   @impl BufferedTask
   def init(initial, reducer, json_rpc_named_arguments) do
+    IO.inspect("#{inspect self()} InternalTransaction.Fetcher.init start")
     {:ok, final} =
       case Keyword.fetch!(json_rpc_named_arguments, :variant) do
         EthereumJSONRPC.Parity ->
@@ -118,6 +119,7 @@ defmodule Indexer.InternalTransaction.Fetcher do
           )
       end
 
+    IO.inspect("#{inspect self()} InternalTransaction.Fetcher.init: #{inspect final}")
     final
   end
 
@@ -146,6 +148,7 @@ defmodule Indexer.InternalTransaction.Fetcher do
               tracer: Tracer
             )
   def run(entries, json_rpc_named_arguments) do
+    IO.inspect("#{inspect self()} InternalTransaction.Fetcher.run: #{inspect entries}")
     variant = Keyword.fetch!(json_rpc_named_arguments, :variant)
 
     unique_entries = unique_entries(entries, variant)
@@ -186,35 +189,37 @@ defmodule Indexer.InternalTransaction.Fetcher do
             {hash, block_number}
           end)
 
-        with {:ok, imported} <-
-               Chain.import(%{
-                 addresses: %{params: addresses_params},
-                 internal_transactions: %{params: internal_transactions_params_without_failed_creations},
-                 internal_transactions_indexed_at_blocks: %{
-                   params: internal_transactions_indexed_at_blocks,
-                   with: :number_only_changeset
-                 },
-                 timeout: :infinity
-               }) do
-          async_import_coin_balances(imported, %{
-            address_hash_to_fetched_balance_block_number: address_hash_to_block_number
-          })
-        else
-          {:error, step, reason, _changes_so_far} ->
-            Logger.error(
-              fn ->
-                [
-                  "failed to import internal transactions for transactions: ",
-                  inspect(reason)
-                ]
-              end,
-              step: step,
-              error_count: unique_entries_count
-            )
-
-            # re-queue the de-duped entries
-            {:retry, unique_entries}
-        end
+        :ok
+#         with {:ok, imported} <-
+#                Chain.import(%{
+#                  addresses: %{params: addresses_params},
+#                  internal_transactions: %{params: internal_transactions_params_without_failed_creations},
+#                  internal_transactions_indexed_at_blocks: %{
+#                    params: internal_transactions_indexed_at_blocks,
+#                    with: :number_only_changeset
+#                  },
+#                  timeout: :infinity
+#                }) do
+#           #           async_import_coin_balances(imported, %{
+#           #             address_hash_to_fetched_balance_block_number: address_hash_to_block_number
+#           #           })
+#           :ok
+#         else
+#           {:error, step, reason, _changes_so_far} ->
+#             Logger.error(
+#               fn ->
+#                 [
+#                   "failed to import internal transactions for transactions: ",
+#                   inspect(reason)
+#                 ]
+#               end,
+#               step: step,
+#               error_count: unique_entries_count
+#             )
+# 
+#             # re-queue the de-duped entries
+#             {:retry, unique_entries}
+#         end
 
       {:error, reason} ->
         Logger.error(fn -> ["failed to fetch internal transactions for transactions: ", inspect(reason)] end,

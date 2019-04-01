@@ -45,32 +45,32 @@ defmodule Indexer.Block.Supervisor do
 
     Supervisor.init(
       [
-        {Catchup.Supervisor,
-         [
-           %{block_fetcher: block_fetcher, block_interval: block_interval, memory_monitor: memory_monitor},
-           [name: Catchup.Supervisor]
-         ]},
-        {Realtime.Supervisor,
-         [
-           %{block_fetcher: realtime_block_fetcher, subscribe_named_arguments: realtime_subscribe_named_arguments},
-           [name: Realtime.Supervisor]
-         ]},
-        {Uncle.Supervisor, [[block_fetcher: block_fetcher, memory_monitor: memory_monitor], [name: Uncle.Supervisor]]},
-        {Reward.Supervisor,
-         [
-           [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
-           [name: Reward.Supervisor]
-         ]},
-        {FailedCreatedAddresses.Supervisor,
-         [
-           json_rpc_named_arguments,
-           [name: FailedCreatedAddresses.Supervisor]
-         ]},
-        {AddressesWithoutCode.Supervisor,
-         [
-           fixing_realtime_fetcher,
-           [name: AddressesWithoutCode.Supervisor]
-         ]}
+#         {Catchup.Supervisor,
+#          [
+#            %{block_fetcher: block_fetcher, block_interval: block_interval, memory_monitor: memory_monitor},
+#            [name: Catchup.Supervisor]
+#          ]},
+#         {Realtime.Supervisor,
+#          [
+#            %{block_fetcher: realtime_block_fetcher, subscribe_named_arguments: realtime_subscribe_named_arguments},
+#            [name: Realtime.Supervisor]
+#          ]},
+#         {Uncle.Supervisor, [[block_fetcher: block_fetcher, memory_monitor: memory_monitor], [name: Uncle.Supervisor]]},
+#         {Reward.Supervisor,
+#          [
+#            [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
+#            [name: Reward.Supervisor]
+#          ]},
+#         {FailedCreatedAddresses.Supervisor,
+#          [
+#            json_rpc_named_arguments,
+#            [name: FailedCreatedAddresses.Supervisor]
+#          ]},
+#         {AddressesWithoutCode.Supervisor,
+#          [
+#            fixing_realtime_fetcher,
+#            [name: AddressesWithoutCode.Supervisor]
+#          ]}
       ],
       strategy: :one_for_one
     )

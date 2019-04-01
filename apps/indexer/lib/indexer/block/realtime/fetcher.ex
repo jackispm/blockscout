@@ -58,6 +58,7 @@ defmodule Indexer.Block.Realtime.Fetcher do
   def init(%{block_fetcher: %Block.Fetcher{} = block_fetcher, subscribe_named_arguments: subscribe_named_arguments})
       when is_list(subscribe_named_arguments) do
     Logger.metadata(fetcher: :block_realtime)
+    IO.puts("#{inspect(self())} init")
 
     {:ok, %__MODULE__{block_fetcher: %Block.Fetcher{block_fetcher | broadcast: :realtime, callback_module: __MODULE__}},
      {:continue, {:init, subscribe_named_arguments}}}
@@ -66,6 +67,8 @@ defmodule Indexer.Block.Realtime.Fetcher do
   @impl GenServer
   def handle_continue({:init, subscribe_named_arguments}, %__MODULE__{subscription: nil} = state)
       when is_list(subscribe_named_arguments) do
+    IO.puts("#{inspect(self())} handle_continue")
+
     case EthereumJSONRPC.subscribe("newHeads", subscribe_named_arguments) do
       {:ok, subscription} ->
         timer = schedule_polling()
@@ -73,6 +76,7 @@ defmodule Indexer.Block.Realtime.Fetcher do
         {:noreply, %__MODULE__{state | subscription: subscription, timer: timer}}
 
       {:error, reason} ->
+        IO.puts("#{inspect(self())} error #{reason}")
         {:stop, reason, state}
     end
   end
@@ -92,6 +96,12 @@ defmodule Indexer.Block.Realtime.Fetcher do
     number = quantity_to_integer(quantity)
     # Subscriptions don't support getting all the blocks and transactions data,
     # so we need to go back and get the full block
+    IO.puts(
+      "#{inspect(self())} subscription: number=#{number} previous_number=#{previous_number} max_number_seen=#{
+        max_number_seen
+      }"
+    )
+
     start_fetch_and_import(number, block_fetcher, previous_number, max_number_seen)
 
     new_max_number = new_max_number(number, max_number_seen)
@@ -117,14 +127,26 @@ defmodule Indexer.Block.Realtime.Fetcher do
           max_number_seen: max_number_seen
         } = state
       ) do
+    IO.puts("#{inspect(self())} polling")
+
     {number, new_max_number} =
       case EthereumJSONRPC.fetch_block_number_by_tag("latest", json_rpc_named_arguments) do
         {:ok, number} when is_nil(max_number_seen) or number > max_number_seen ->
+          IO.puts(
+            "#{inspect(self())} poll: number=#{number} previous_number=#{previous_number} max_number_seen=#{
+              max_number_seen
+            }"
+          )
+
           start_fetch_and_import(number, block_fetcher, previous_number, number)
 
           {max_number_seen, number}
 
         _ ->
+          IO.puts(
+            "#{inspect(self())} poll: number=nope previous_number=#{previous_number} max_number_seen=#{max_number_seen}"
+          )
+
           {previous_number, max_number_seen}
       end
 
@@ -218,6 +240,8 @@ defmodule Indexer.Block.Realtime.Fetcher do
 
   defp start_fetch_and_import(number, block_fetcher, previous_number, max_number_seen) do
     start_at = determine_start_at(number, previous_number, max_number_seen)
+
+    IO.puts("#{inspect(self())} fetching: #{start_at}..#{number}")
 
     for block_number_to_fetch <- start_at..number do
       args = [block_number_to_fetch, block_fetcher, reorg?(number, max_number_seen)]

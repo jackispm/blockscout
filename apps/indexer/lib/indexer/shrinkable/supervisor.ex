@@ -56,40 +56,40 @@ defmodule Indexer.Shrinkable.Supervisor do
 
     Supervisor.init(
       [
-        {CoinBalance.Supervisor,
-         [
-           [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
-           [name: CoinBalance.Supervisor]
-         ]},
-        {PendingTransaction.Supervisor,
-         [[json_rpc_named_arguments: json_rpc_named_arguments], [name: PendingTransactionFetcher]]},
-        {Code.Supervisor,
-         [
-           [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
-           [name: Code.Supervisor]
-         ]},
-        {ReplacedTransaction.Supervisor,
-         [
-           [memory_monitor: memory_monitor],
-           [name: ReplacedTransaction.Supervisor]
-         ]},
-        {InternalTransaction.Supervisor,
-         [
-           [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
-           [name: InternalTransaction.Supervisor]
-         ]},
-        {Token.Supervisor,
-         [
-           [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
-           [name: Token.Supervisor]
-         ]},
-        {TokenBalance.Supervisor,
-         [
-           [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
-           [name: TokenBalance.Supervisor]
-         ]},
-        {Block.Supervisor, [block_fetcher_supervisor_named_arguments, [name: Block.Supervisor]]},
-        {TokenTransfer.Uncataloged.Supervisor, [[], [name: TokenTransfer.Uncataloged.Supervisor]]}
+#         {CoinBalance.Supervisor,
+#          [
+#            [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
+#            [name: CoinBalance.Supervisor]
+#          ]},
+#         {PendingTransaction.Supervisor,
+#          [[json_rpc_named_arguments: json_rpc_named_arguments], [name: PendingTransactionFetcher]]},
+#         {Code.Supervisor,
+#          [
+#            [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
+#            [name: Code.Supervisor]
+#          ]},
+#         {ReplacedTransaction.Supervisor,
+#          [
+#            [memory_monitor: memory_monitor],
+#            [name: ReplacedTransaction.Supervisor]
+#          ]},
+#         {InternalTransaction.Supervisor,
+#          [
+#            [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
+#            [name: InternalTransaction.Supervisor]
+#          ]},
+#         {Token.Supervisor,
+#          [
+#            [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
+#            [name: Token.Supervisor]
+#          ]},
+#         {TokenBalance.Supervisor,
+#          [
+#            [json_rpc_named_arguments: json_rpc_named_arguments, memory_monitor: memory_monitor],
+#            [name: TokenBalance.Supervisor]
+#          ]},
+#         {Block.Supervisor, [block_fetcher_supervisor_named_arguments, [name: Block.Supervisor]]}
+#         TokenTransfer.Uncataloged.Supervisor
       ],
       strategy: :one_for_one
     )

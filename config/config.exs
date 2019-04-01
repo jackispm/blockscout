@@ -22,13 +22,13 @@ config :logger,
     # only :ethereum_jsonrpc, but all levels
     {LoggerFileBackend, :ethereum_jsonrpc},
     # only :explorer, but all levels
-    {LoggerFileBackend, :explorer},
+    {LoggerFileBackend, :explorer}
     # only :indexer, but all levels
-    {LoggerFileBackend, :indexer},
-    {LoggerFileBackend, :indexer_token_balances},
-    {LoggerFileBackend, :failed_contract_creations},
-    {LoggerFileBackend, :addresses_without_code},
-    {LoggerFileBackend, :reading_token_functions}
+    #     {LoggerFileBackend, :indexer},
+    #     {LoggerFileBackend, :indexer_token_balances},
+    #     {LoggerFileBackend, :failed_contract_creations},
+    #     {LoggerFileBackend, :addresses_without_code},
+    #     {LoggerFileBackend, :reading_token_functions}
   ]
 
 config :logger, :console,

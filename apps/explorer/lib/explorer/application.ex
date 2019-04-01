@@ -23,12 +23,12 @@ defmodule Explorer.Application do
     # Children to start in all environments
     base_children = [
       Explorer.Repo,
-      Supervisor.Spec.worker(SpandexDatadog.ApiServer, [datadog_opts()]),
-      Supervisor.child_spec({Task.Supervisor, name: Explorer.MarketTaskSupervisor}, id: Explorer.MarketTaskSupervisor),
-      Supervisor.child_spec({Task.Supervisor, name: Explorer.TaskSupervisor}, id: Explorer.TaskSupervisor),
-      {Registry, keys: :duplicate, name: Registry.ChainEvents, id: Registry.ChainEvents},
-      {Admin.Recovery, [[], [name: Admin.Recovery]]},
-      {TransactionCountCache, [[], []]}
+      #       Supervisor.Spec.worker(SpandexDatadog.ApiServer, [datadog_opts()]),
+      #       Supervisor.child_spec({Task.Supervisor, name: Explorer.MarketTaskSupervisor}, id: Explorer.MarketTaskSupervisor),
+      #       Supervisor.child_spec({Task.Supervisor, name: Explorer.TaskSupervisor}, id: Explorer.TaskSupervisor),
+      {Registry, keys: :duplicate, name: Registry.ChainEvents, id: Registry.ChainEvents}
+      #       {Admin.Recovery, [[], [name: Admin.Recovery]]},
+      #       {TransactionCountCache, [[], []]}
     ]
 
     children = base_children ++ configurable_children()
@@ -44,12 +44,12 @@ defmodule Explorer.Application do
 
   defp configurable_children do
     [
-      configure(Explorer.ExchangeRates),
-      configure(Explorer.KnownTokens),
-      configure(Explorer.Market.History.Cataloger),
-      configure(Explorer.Counters.AddressesWithBalanceCounter),
-      configure(Explorer.Counters.AverageBlockTime),
-      configure(Explorer.Validator.MetadataProcessor)
+      #       configure(Explorer.ExchangeRates),
+      #       configure(Explorer.KnownTokens),
+      #       configure(Explorer.Market.History.Cataloger),
+      #       configure(Explorer.Counters.AddressesWithBalanceCounter),
+      configure(Explorer.Counters.AverageBlockTime)
+      #       configure(Explorer.Validator.MetadataProcessor)
     ]
     |> List.flatten()
   end

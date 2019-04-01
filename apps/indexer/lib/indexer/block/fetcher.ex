@@ -131,14 +131,14 @@ defmodule Indexer.Block.Fetcher do
            beneficiary_params_set
            |> add_gas_payments(transactions_with_receipts)
            |> Reward.Fetcher.reduce_uncle_rewards(),
-         address_token_balances = TokenBalances.params_set(%{token_transfers_params: token_transfers}),
+#          address_token_balances = TokenBalances.params_set(%{token_transfers_params: token_transfers}),
          {:ok, inserted} <-
            __MODULE__.import(
              state,
              %{
                addresses: %{params: addresses},
                address_coin_balances: %{params: coin_balances_params_set},
-               address_token_balances: %{params: address_token_balances},
+               #                address_token_balances: %{params: address_token_balances},
                blocks: %{params: blocks},
                block_second_degree_relations: %{params: block_second_degree_relations_params},
                block_rewards: %{errors: beneficiaries_errors, params: beneficiaries_with_gas_payment},
